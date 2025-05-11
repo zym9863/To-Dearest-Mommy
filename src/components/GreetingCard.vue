@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import CardTemplate from './CardTemplate.vue';
 import type { CardTemplate as CardTemplateType } from '../types';
 import { fileToDataURL, resizeImage, generateAndDownloadImage } from '../utils/imageUtils';
