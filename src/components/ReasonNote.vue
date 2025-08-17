@@ -71,21 +71,45 @@ const formattedDate = computed(() => {
 <style scoped>
 .reason-note {
   position: relative;
-  width: 220px;
-  min-height: 120px;
-  padding: 1.5rem 1.2rem 1rem;
-  border-radius: 2px;
-  box-shadow: 0 10px 20px var(--shadow-color);
-  background-color: white;
-  animation: float 5s ease-in-out infinite;
+  width: 240px;
+  min-height: 140px;
+  padding: 1.8rem 1.4rem 1.2rem;
+  border-radius: 8px;
+  box-shadow: 
+    0 15px 35px rgba(0, 0, 0, 0.1),
+    0 5px 15px rgba(0, 0, 0, 0.05);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+  animation: float 6s ease-in-out infinite;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   z-index: 1;
+  transform-style: preserve-3d;
+  cursor: pointer;
+}
+
+.reason-note::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.4));
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.reason-note:hover::before {
+  opacity: 1;
 }
 
 .reason-note:hover {
-  transform: scale(1.08) rotate(0deg) !important;
-  z-index: 10;
-  box-shadow: 0 15px 30px var(--shadow-color);
+  transform: scale(1.1) rotate(0deg) translateZ(50px) !important;
+  z-index: 100;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.15),
+    0 10px 20px rgba(0, 0, 0, 0.1),
+    0 0 30px var(--glow-color);
 }
 
 .note-content {
@@ -94,74 +118,96 @@ const formattedDate = computed(() => {
 }
 
 .reason-content {
-  font-size: 1rem;
-  line-height: 1.6;
-  margin: 0 0 0.8rem;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin: 0 0 1rem;
   color: var(--text-color);
-  font-weight: 500;
+  font-weight: 600;
   word-break: break-word;
+  font-family: 'Microsoft YaHei', sans-serif;
 }
 
 .reason-date {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--text-light-color);
   text-align: right;
   font-style: italic;
+  opacity: 0.8;
 }
 
 .note-decoration {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
-  width: 40px;
-  height: 40px;
-  opacity: 0.1;
+  bottom: 15px;
+  right: 15px;
+  width: 50px;
+  height: 50px;
+  opacity: 0.15;
   z-index: 1;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
+  animation: float 4s ease-in-out infinite;
+  animation-delay: inherit;
 }
 
 .note-pin {
   position: absolute;
-  top: -10px;
+  top: -12px;
   left: 50%;
   transform: translateX(-50%);
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background: radial-gradient(circle at 30% 30%, #ffffff, #e0e0e0);
+  box-shadow: 
+    0 3px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(0, 0, 0, 0.1);
   z-index: 3;
 }
 
+.note-pin::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #666, #999);
+}
+
 .note-tape {
   position: absolute;
-  height: 30px;
-  width: 50px;
-  background-color: rgba(255, 255, 255, 0.6);
-  opacity: 0.7;
-  transform: rotate(-5deg);
+  height: 35px;
+  width: 60px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.4));
+  opacity: 0.8;
   z-index: 2;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .note-tape-left {
-  top: -15px;
-  left: 20px;
+  top: -18px;
+  left: 25px;
   transform: rotate(-45deg);
 }
 
 .note-tape-right {
-  top: -15px;
-  right: 20px;
+  top: -18px;
+  right: 25px;
   transform: rotate(45deg);
 }
 
-/* Different styles for notes */
+/* Different styles for notes with enhanced gradients */
 .heart-style {
-  background-color: #fff0f5;
-  border: 1px solid var(--border-color);
+  background: linear-gradient(135deg, #fff0f5, #ffe5ec);
+  border: 1px solid rgba(255, 90, 135, 0.2);
+}
+
+.heart-style:hover {
+  background: linear-gradient(135deg, #ffe5ec, #ffd6e0);
 }
 
 .heart-style .note-decoration {
@@ -169,12 +215,16 @@ const formattedDate = computed(() => {
 }
 
 .heart-style .note-tape {
-  background-color: rgba(255, 90, 135, 0.2);
+  background: linear-gradient(135deg, rgba(255, 90, 135, 0.3), rgba(255, 90, 135, 0.1));
 }
 
 .flower-style {
-  background-color: #fff8f0;
-  border: 1px solid #ffe0c0;
+  background: linear-gradient(135deg, #fff8f0, #ffede0);
+  border: 1px solid rgba(255, 158, 109, 0.2);
+}
+
+.flower-style:hover {
+  background: linear-gradient(135deg, #ffede0, #ffe0c0);
 }
 
 .flower-style .note-decoration {
@@ -182,12 +232,16 @@ const formattedDate = computed(() => {
 }
 
 .flower-style .note-tape {
-  background-color: rgba(255, 158, 109, 0.2);
+  background: linear-gradient(135deg, rgba(255, 158, 109, 0.3), rgba(255, 158, 109, 0.1));
 }
 
 .star-style {
-  background-color: #f0f8ff;
-  border: 1px solid #c0e0ff;
+  background: linear-gradient(135deg, #f0f8ff, #e0f0ff);
+  border: 1px solid rgba(33, 150, 243, 0.2);
+}
+
+.star-style:hover {
+  background: linear-gradient(135deg, #e0f0ff, #d0e8ff);
 }
 
 .star-style .note-decoration {
@@ -195,12 +249,16 @@ const formattedDate = computed(() => {
 }
 
 .star-style .note-tape {
-  background-color: rgba(33, 150, 243, 0.2);
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.3), rgba(33, 150, 243, 0.1));
 }
 
 .ribbon-style {
-  background-color: #f0fff0;
-  border: 1px solid #c0ffc0;
+  background: linear-gradient(135deg, #f0fff0, #e0ffe0);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.ribbon-style:hover {
+  background: linear-gradient(135deg, #e0ffe0, #d0ffd0);
 }
 
 .ribbon-style .note-decoration {
@@ -208,12 +266,16 @@ const formattedDate = computed(() => {
 }
 
 .ribbon-style .note-tape {
-  background-color: rgba(76, 175, 80, 0.2);
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(76, 175, 80, 0.1));
 }
 
 .gift-style {
-  background-color: #fff0ff;
-  border: 1px solid #ffc0ff;
+  background: linear-gradient(135deg, #fff0ff, #ffe0ff);
+  border: 1px solid rgba(156, 39, 176, 0.2);
+}
+
+.gift-style:hover {
+  background: linear-gradient(135deg, #ffe0ff, #ffd0ff);
 }
 
 .gift-style .note-decoration {
@@ -221,27 +283,44 @@ const formattedDate = computed(() => {
 }
 
 .gift-style .note-tape {
-  background-color: rgba(156, 39, 176, 0.2);
+  background: linear-gradient(135deg, rgba(156, 39, 176, 0.3), rgba(156, 39, 176, 0.1));
 }
 
-/* Color variations */
+/* Enhanced color variations with gradients */
 .color-variation-0 {
-  box-shadow: 0 10px 20px rgba(255, 90, 135, 0.15);
+  box-shadow: 
+    0 15px 35px rgba(255, 90, 135, 0.2),
+    0 5px 15px rgba(255, 90, 135, 0.1);
 }
 
 .color-variation-1 {
-  box-shadow: 0 10px 20px rgba(255, 158, 109, 0.15);
+  box-shadow: 
+    0 15px 35px rgba(255, 158, 109, 0.2),
+    0 5px 15px rgba(255, 158, 109, 0.1);
 }
 
 .color-variation-2 {
-  box-shadow: 0 10px 20px rgba(33, 150, 243, 0.15);
+  box-shadow: 
+    0 15px 35px rgba(33, 150, 243, 0.2),
+    0 5px 15px rgba(33, 150, 243, 0.1);
 }
 
 .color-variation-3 {
-  box-shadow: 0 10px 20px rgba(76, 175, 80, 0.15);
+  box-shadow: 
+    0 15px 35px rgba(76, 175, 80, 0.2),
+    0 5px 15px rgba(76, 175, 80, 0.1);
 }
 
 .color-variation-4 {
-  box-shadow: 0 10px 20px rgba(156, 39, 176, 0.15);
+  box-shadow: 
+    0 15px 35px rgba(156, 39, 176, 0.2),
+    0 5px 15px rgba(156, 39, 176, 0.1);
+}
+
+@media (max-width: 768px) {
+  .reason-note {
+    width: 100%;
+    max-width: 300px;
+  }
 }
 </style>

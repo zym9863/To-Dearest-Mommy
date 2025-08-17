@@ -349,6 +349,7 @@ const formattedDate = computed(() => {
 .greeting-card-creator {
   margin: 3rem 0;
   position: relative;
+  animation: fadeIn 1s ease-out;
 }
 
 .creator-header {
@@ -358,6 +359,7 @@ const formattedDate = computed(() => {
 
 .section-title {
   margin-bottom: 0.5rem;
+  animation: slideInUp 0.8s ease-out;
 }
 
 .section-description {
@@ -365,27 +367,35 @@ const formattedDate = computed(() => {
   max-width: 600px;
   margin: 0 auto 2rem;
   font-size: 1.1rem;
+  animation: slideInUp 0.8s ease-out 0.2s;
 }
 
 /* Progress bar */
 .progress-container {
   max-width: 800px;
   margin: 2rem auto 0;
+  animation: fadeIn 1s ease-out 0.4s;
 }
 
 .progress-bar {
-  height: 6px;
+  height: 8px;
   background-color: var(--border-color);
-  border-radius: 3px;
+  border-radius: 4px;
   margin-bottom: 1.5rem;
   overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
-  border-radius: 3px;
-  transition: width 0.5s ease;
+  background: linear-gradient(90deg, 
+    var(--gradient-start) 0%, 
+    var(--gradient-end) 50%, 
+    var(--gradient-purple) 100%);
+  background-size: 200% 200%;
+  border-radius: 4px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: gradientShift 4s ease infinite;
 }
 
 .progress-steps {
@@ -399,142 +409,194 @@ const formattedDate = computed(() => {
   align-items: center;
   width: 33.33%;
   position: relative;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
 }
 
 .step-number {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background-color: white;
   border: 2px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
   color: var(--text-light-color);
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .step-label {
-  font-size: 0.9rem;
+  font-size: 1rem;
+  font-weight: 500;
   color: var(--text-light-color);
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
 }
 
 .progress-step.active .step-number {
-  background-color: var(--primary-color);
   border-color: var(--primary-color);
-  color: white;
-  box-shadow: 0 0 0 4px var(--shadow-color);
+  color: var(--primary-color);
+  transform: scale(1.1);
+  box-shadow: 0 0 0 4px rgba(255, 90, 135, 0.2);
 }
 
 .progress-step.active .step-label {
   color: var(--primary-color);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .progress-step.completed .step-number {
   background-color: var(--success-color);
   border-color: var(--success-color);
   color: white;
+  transform: scale(1.1) rotate(10deg);
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+}
+
+.progress-step.completed .step-label {
+  color: var(--success-color);
 }
 
 /* Step sections */
 .section.card {
-  padding: 2rem;
+  padding: 2.5rem;
   margin-bottom: 2rem;
-  transition: all 0.4s ease;
-  opacity: 0.8;
-  transform: scale(0.98);
+  transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+  opacity: 0.7;
+  transform: perspective(1000px) rotateY(5deg) scale(0.95);
+  transform-origin: right center;
 }
 
 .section.active-step {
   opacity: 1;
-  transform: scale(1);
-  box-shadow: 0 15px 35px var(--shadow-color);
+  transform: perspective(1000px) rotateY(0deg) scale(1);
+  box-shadow: 0 20px 50px var(--shadow-color);
+  border-color: var(--primary-color);
 }
 
 .step-header {
   display: flex;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--border-color);
 }
 
 .step-icon {
-  font-size: 1.8rem;
-  margin-right: 1rem;
-  animation: pulse 2s infinite;
+  font-size: 2rem;
+  margin-right: 1.2rem;
+  animation: bounceIn 0.8s ease;
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.1));
 }
 
 .step-header h3 {
   margin: 0;
-  color: var(--text-color);
+  font-size: 1.6rem;
+  color: var(--primary-color);
+  font-weight: 700;
 }
 
 .templates-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 2rem;
-  margin: 2rem 0;
+  gap: 2.5rem;
+  margin: 2.5rem 0;
 }
 
 /* Step navigation */
 .step-navigation {
   display: flex;
   justify-content: space-between;
-  margin-top: 2rem;
+  margin-top: 2.5rem;
   padding-top: 1.5rem;
   border-top: 1px solid var(--border-color);
 }
 
-.next-step-btn, .prev-step-btn, .preview-btn {
+.next-step-btn, .prev-step-btn, .preview-btn, .edit-btn, .download-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 120px;
+  min-width: 140px;
+  padding: 0.8em 1.8em;
+  font-size: 1.05em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 50px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
 }
 
 .btn-icon {
-  margin: 0 5px;
-  font-size: 1.1rem;
+  margin: 0 8px;
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.next-step-btn:hover .btn-icon,
+.prev-step-btn:hover .btn-icon {
+  transform: translateX(5px);
+}
+
+.prev-step-btn:hover .btn-icon {
+  transform: translateX(-5px);
+}
+
+.next-step-btn {
+  background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+  color: white;
+  border: none;
+}
+
+.prev-step-btn {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--border-color);
+}
+
+.preview-btn {
+  background: linear-gradient(45deg, var(--gradient-purple), var(--gradient-pink));
+  color: white;
+  border: none;
 }
 
 /* Message suggestions */
 .message-suggestions {
-  margin-top: 1.5rem;
+  margin-top: 2rem;
 }
 
 .suggestions-title {
-  font-size: 0.9rem;
-  color: var(--text-light-color);
-  margin-bottom: 0.8rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 1rem;
 }
 
 .suggestion-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.8rem;
+  gap: 1rem;
 }
 
 .suggestion-chip {
-  background-color: var(--background-color);
-  border: 1px solid var(--border-color);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   border-radius: 30px;
-  padding: 0.5em 1em;
-  font-size: 0.9rem;
+  padding: 0.6em 1.2em;
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .suggestion-chip:hover {
   background-color: var(--primary-color);
   color: white;
   border-color: var(--primary-color);
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 5px 15px var(--shadow-color);
 }
 
 /* Character count */
@@ -548,10 +610,12 @@ const formattedDate = computed(() => {
 
 .char-count-warning {
   color: orange;
+  font-weight: 600;
 }
 
 .char-count-danger {
   color: red;
+  font-weight: 700;
 }
 
 /* Upload area */
@@ -560,6 +624,7 @@ const formattedDate = computed(() => {
   gap: 2rem;
   align-items: flex-start;
   flex-wrap: wrap;
+  animation: fadeIn 0.5s ease-out;
 }
 
 .upload-area {
@@ -572,40 +637,48 @@ const formattedDate = computed(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 2.5rem;
   border: 2px dashed var(--border-color);
-  border-radius: 12px;
+  border-radius: 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  background-color: rgba(255, 255, 255, 0.5);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.5));
   text-align: center;
 }
 
 .upload-label:hover {
   border-color: var(--primary-color);
-  background-color: rgba(255, 90, 135, 0.05);
+  background-color: rgba(255, 90, 135, 0.1);
+  transform: scale(1.03);
+  box-shadow: 0 10px 20px var(--shadow-color);
 }
 
 .upload-icon {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background-color: var(--background-color);
+  background-color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 1rem;
-  font-size: 2rem;
+  font-size: 2.5rem;
   color: var(--primary-color);
   border: 2px solid var(--border-color);
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .upload-label:hover .upload-icon {
-  background-color: var(--primary-color);
+  background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
   color: white;
-  border-color: var(--primary-color);
-  transform: scale(1.1);
+  border-color: transparent;
+  transform: rotate(15deg) scale(1.1);
+}
+
+.upload-label span {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--text-color);
 }
 
 .upload-label small {
@@ -621,62 +694,90 @@ const formattedDate = computed(() => {
 .image-preview-container {
   flex: 1;
   min-width: 250px;
+  animation: bounceIn 0.8s ease-out;
 }
 
 .image-preview {
   position: relative;
   margin-top: 0;
   max-width: 100%;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 10px 25px var(--shadow-color);
-  border: 4px solid white;
+  box-shadow: 0 15px 35px var(--shadow-color);
+  border: 5px solid white;
+  transform: rotate(3deg);
+  transition: transform 0.4s ease;
+}
+
+.image-preview:hover {
+  transform: rotate(0deg) scale(1.05);
 }
 
 .image-preview img {
   width: 100%;
   height: auto;
   display: block;
-  transition: transform 0.5s ease;
-}
-
-.image-preview:hover img {
-  transform: scale(1.03);
 }
 
 .remove-image-btn {
   position: absolute;
   top: 10px;
   right: 10px;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.9);
   color: var(--primary-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
+  font-weight: 700;
   cursor: pointer;
   border: none;
   padding: 0;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .remove-image-btn:hover {
   background-color: var(--primary-color);
   color: white;
-  transform: rotate(90deg);
+  transform: rotate(180deg) scale(1.1);
 }
 
 /* Card preview section */
 .card-preview-section {
   margin-top: 3rem;
   padding: 3rem;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 16px;
-  box-shadow: 0 15px 40px var(--shadow-color);
-  animation: fadeIn 0.5s ease;
+  background: linear-gradient(-45deg, #fff8f9, #ffe5ec, #fff0f5, #fff8f9);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px var(--shadow-color);
+  animation: fadeIn 0.8s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-preview-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 40%);
+  animation: rotateGlow 20s linear infinite;
+}
+
+@keyframes rotateGlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .preview-header {
@@ -686,12 +787,14 @@ const formattedDate = computed(() => {
 
 .preview-header h3 {
   margin-bottom: 0.5rem;
+  font-size: 2rem;
   color: var(--primary-color);
+  font-weight: 800;
 }
 
 .preview-tip {
   color: var(--text-light-color);
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .card-preview {
@@ -705,15 +808,16 @@ const formattedDate = computed(() => {
   height: 400px;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 20px 40px var(--shadow-color);
-  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   transform-style: preserve-3d;
-  perspective: 1000px;
+  perspective: 1500px;
+  position: relative;
 }
 
 .card-container:hover {
-  transform: rotateY(5deg) scale(1.02);
-  box-shadow: 0 25px 50px var(--shadow-color);
+  transform: rotateY(10deg) rotateX(5deg) scale(1.05);
+  box-shadow: 0 35px 70px rgba(0,0,0,0.2);
 }
 
 .card-background {
@@ -725,21 +829,24 @@ const formattedDate = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  transform: translateZ(0);
 }
 
 .card-content {
-  width: 80%;
-  height: 80%;
-  background-color: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(5px);
+  width: 85%;
+  height: 85%;
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-radius: 12px;
-  padding: 2rem;
+  padding: 2.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--glass-border);
+  transform: translateZ(50px);
 }
 
 .card-header {
@@ -749,11 +856,11 @@ const formattedDate = computed(() => {
 }
 
 .card-title {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.6rem;
+  font-weight: 800;
   color: var(--primary-color);
   margin-bottom: 0.5rem;
-  background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -762,7 +869,7 @@ const formattedDate = computed(() => {
 
 .card-message {
   font-size: 1.2rem;
-  line-height: 1.6;
+  line-height: 1.7;
   text-align: center;
   color: var(--text-color);
   margin-bottom: 1rem;
@@ -770,6 +877,8 @@ const formattedDate = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: 'KaiTi', serif;
+  font-weight: 500;
 }
 
 .card-image {
@@ -779,12 +888,13 @@ const formattedDate = computed(() => {
   overflow: hidden;
   margin: 1rem 0;
   border: 4px solid white;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  transition: transform 0.4s ease;
+  transform: translateZ(30px) rotateY(-5deg);
 }
 
 .card-image:hover {
-  transform: scale(1.05);
+  transform: scale(1.1) translateZ(40px) rotateY(0deg);
 }
 
 .card-image img {
@@ -797,13 +907,15 @@ const formattedDate = computed(() => {
   width: 100%;
   text-align: center;
   margin-top: 1rem;
+  transform: translateZ(20px);
 }
 
 .card-signature {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   color: var(--primary-color);
   margin-bottom: 0.3rem;
-  font-weight: 600;
+  font-weight: 700;
+  font-family: 'Long Cang', cursive;
 }
 
 .card-date {
@@ -818,24 +930,31 @@ const formattedDate = computed(() => {
   margin-top: 2.5rem;
 }
 
-.edit-btn, .download-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 150px;
-  padding: 0.8em 1.5em;
-  font-size: 1.1em;
+.edit-btn {
+  background-color: white;
+  color: var(--primary-color);
+  border: 1px solid var(--border-color);
 }
 
 .download-btn {
-  background-color: var(--primary-color);
+  background: linear-gradient(45deg, var(--success-color), #66bb6a);
   color: white;
+  border: none;
+}
+
+.download-btn:hover,
+.edit-btn:hover,
+.preview-btn:hover,
+.next-step-btn:hover,
+.prev-step-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 .loader {
   width: 20px;
   height: 20px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
+  border: 3px solid rgba(255, 255, 255, 0.4);
   border-radius: 50%;
   border-top-color: white;
   animation: spin 1s ease-in-out infinite;
@@ -848,18 +967,20 @@ const formattedDate = computed(() => {
 
 .success-message {
   margin-top: 1.5rem;
-  background-color: var(--success-color);
+  background: linear-gradient(45deg, var(--success-color), #81c784);
   color: white;
   padding: 0.8em 1.5em;
   border-radius: 30px;
   display: flex;
   align-items: center;
-  animation: fadeIn 0.5s ease;
+  animation: bounceIn 0.8s ease;
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
 }
 
 .success-icon {
   margin-right: 8px;
   font-weight: bold;
+  animation: heartBeat 1.5s infinite;
 }
 
 @media (max-width: 768px) {
@@ -873,18 +994,20 @@ const formattedDate = computed(() => {
     gap: 1rem;
   }
 
-  .next-step-btn, .prev-step-btn, .preview-btn {
+  .next-step-btn, .prev-step-btn, .preview-btn, .edit-btn, .download-btn {
     width: 100%;
   }
 
   .card-container {
     width: 100%;
-    height: 350px;
+    height: auto;
+    min-height: 450px;
   }
 
   .card-content {
     width: 90%;
-    height: 85%;
+    height: auto;
+    min-height: 400px;
     padding: 1.5rem;
   }
 
@@ -903,10 +1026,6 @@ const formattedDate = computed(() => {
 
   .preview-actions {
     flex-direction: column;
-    width: 100%;
-  }
-
-  .edit-btn, .download-btn {
     width: 100%;
   }
 

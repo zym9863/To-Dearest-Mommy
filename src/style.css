@@ -15,17 +15,20 @@
   --shadow-color: rgba(255, 90, 135, 0.15);
   --gradient-start: #ff5a87;
   --gradient-end: #ff9e6d;
+  --gradient-purple: #ff5a87;
+  --gradient-pink: #ffb0c0;
+  --gradient-orange: #ff9e6d;
   --success-color: #4caf50;
   --info-color: #2196f3;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glow-color: rgba(255, 90, 135, 0.3);
 
-  /* Background pattern */
-  background-color: var(--background-color);
-  background-image:
-    radial-gradient(var(--border-color) 1px, transparent 1px),
-    radial-gradient(var(--border-color) 1px, var(--background-color) 1px);
-  background-size: 50px 50px;
-  background-position: 0 0, 25px 25px;
-  background-attachment: fixed;
+  /* Animated gradient background */
+  background: linear-gradient(-45deg, #fff8f9, #ffe5ec, #fff0f5, #fff8f9);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  position: relative;
 
   color: var(--text-color);
 
@@ -33,6 +36,22 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Beautiful animated background pattern */
+:root::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(circle at 20% 80%, rgba(255, 90, 135, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 176, 192, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255, 158, 109, 0.1) 0%, transparent 50%);
+  z-index: -1;
+  animation: floatPattern 20s ease-in-out infinite;
 }
 
 a {
@@ -141,18 +160,46 @@ button:disabled {
 }
 
 .card {
-  background-color: var(--card-bg-color);
-  border-radius: 16px;
-  box-shadow: 0 10px 30px var(--shadow-color);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 
+    0 10px 30px var(--shadow-color),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
   padding: 1.8em;
   margin: 1.5em 0;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid var(--glass-border);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.7s;
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px var(--shadow-color);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 
+    0 20px 40px var(--shadow-color),
+    0 0 30px var(--glow-color);
+}
+
+.card:hover::before {
+  left: 100%;
 }
 
 .container {
@@ -271,6 +318,79 @@ label {
   }
 }
 
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes floatPattern {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+@keyframes heartBeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  10%, 30% {
+    transform: scale(0.9);
+  }
+  20%, 40% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px var(--glow-color);
+  }
+  50% {
+    box-shadow: 0 0 40px var(--glow-color), 0 0 60px var(--glow-color);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 #app {
   width: 100%;
   margin: 0 auto;
@@ -283,6 +403,8 @@ label {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-fill-color: transparent;
+  animation: gradientShift 5s ease infinite;
+  background-size: 200% 200%;
 }
 
 .shimmer {
@@ -300,6 +422,14 @@ label {
   animation: fadeIn 0.8s ease forwards;
 }
 
+.slide-in-up {
+  animation: slideInUp 0.8s ease forwards;
+}
+
+.bounce-in {
+  animation: bounceIn 0.8s ease forwards;
+}
+
 .icon {
   display: inline-flex;
   align-items: center;
@@ -307,6 +437,30 @@ label {
   width: 24px;
   height: 24px;
   margin-right: 8px;
+}
+
+/* Glass morphism effect */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+/* Neon glow effect */
+.neon-glow {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* Floating elements */
+.floating {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Heart beat animation */
+.heart-beat {
+  animation: heartBeat 1.5s ease-in-out infinite;
 }
 
 /* Responsive design */
