@@ -1,43 +1,49 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import ReasonNote from './ReasonNote.vue';
 import type { LoveReason } from '../types';
+import { getItem, setItem } from '../utils/storage';
 
 // State for the new reason input
 const newReason = ref('');
 const isSubmitting = ref(false);
 const showSuccessMessage = ref(false);
-const reasons = ref<LoveReason[]>([
-  {
-    id: 1,
-    content: '妈妈的饭菜是世界上最好吃的',
-    createdAt: new Date('2023-05-10')
-  },
-  {
-    id: 2,
-    content: '妈妈总是在我难过的时候给我温暖的拥抱',
-    createdAt: new Date('2023-05-11')
-  },
-  {
-    id: 3,
-    content: '妈妈教会了我如何坚强面对困难',
-    createdAt: new Date('2023-05-12')
-  },
-  {
-    id: 4,
-    content: '妈妈的笑容是我最大的动力',
-    createdAt: new Date('2023-05-13')
-  },
-  {
-    id: 5,
-    content: '妈妈总是支持我追求自己的梦想',
-    createdAt: new Date('2023-05-14')
+const reasons = ref<LoveReason[]>([]);
+const STORAGE_KEY = 'reasons';
+
+// 恢复本地数据
+onMounted(() => {
+  const data = getItem<any[]>(STORAGE_KEY, []);
+  reasons.value = (data || []).map((r, idx) => ({
+    id: typeof r.id === 'number' ? r.id : idx + 1,
+    content: String(r.content ?? ''),
+    createdAt: r.createdAt ? new Date(r.createdAt) : new Date()
+  }));
+  if (reasons.value.length === 0) {
+    // 为空时提供示例，提升首屏观感
+    reasons.value = [
+      { id: 1, content: '妈妈的饭菜是世界上最好吃的', createdAt: new Date('2023-05-10') },
+      { id: 2, content: '妈妈总是在我难过的时候给我温暖的拥抱', createdAt: new Date('2023-05-11') },
+      { id: 3, content: '妈妈教会了我如何坚强面对困难', createdAt: new Date('2023-05-12') }
+    ];
   }
-]);
+});
+
+// 持久化
+watch(reasons, (arr) => {
+  const plain = arr.map(r => ({ id: r.id, content: r.content, createdAt: r.createdAt.toISOString() }));
+  setItem(STORAGE_KEY, plain);
+}, { deep: true });
 
 // Add a new reason with animation
+const MIN = 3;
 const addReason = () => {
-  if (newReason.value.trim() === '') return;
+  const content = newReason.value.trim();
+  if (content.length < MIN) return;
+  if (content.length > maxChars) return;
+  // 判重（忽略大小写与空白）
+  const norm = (s: string) => s.replace(/\s+/g, '').toLowerCase();
+  if (reasons.value.some(r => norm(r.content) === norm(content))) return;
 
   isSubmitting.value = true;
 
@@ -46,11 +52,7 @@ const addReason = () => {
       ? Math.max(...reasons.value.map(r => r.id)) + 1
       : 1;
 
-    reasons.value.push({
-      id: newId,
-      content: newReason.value.trim(),
-      createdAt: new Date()
-    });
+  reasons.value.push({ id: newId, content, createdAt: new Date() });
 
     newReason.value = '';
     isSubmitting.value = false;
@@ -131,8 +133,10 @@ const charCountClasses = computed(() => ({
           rows="3"
           placeholder="我爱妈妈，因为..."
           @keyup.enter="addReason"
-          :maxlength="maxChars + 10"
+          :maxlength="maxChars"
+          aria-describedby="reason-help"
         ></textarea>
+        <small id="reason-help" class="sr-only">最少 3 字，最多 {{ maxChars }} 字；重复内容会被忽略</small>
       </div>
 
       <div class="form-actions">
@@ -146,7 +150,7 @@ const charCountClasses = computed(() => ({
           {{ isSubmitting ? '添加中...' : '添加到收集墙' }}
         </button>
 
-        <div class="success-message" v-if="showSuccessMessage">
+  <div class="success-message" v-if="showSuccessMessage" aria-live="polite">
           <span class="success-icon">✓</span> 添加成功！
         </div>
       </div>

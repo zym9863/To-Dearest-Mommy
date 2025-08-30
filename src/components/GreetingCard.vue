@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import CardTemplate from './CardTemplate.vue';
 import type { CardTemplate as CardTemplateType } from '../types';
-import { fileToDataURL, resizeImage, generateAndDownloadImage } from '../utils/imageUtils';
+import { fileToDataURL, resizeImage, generateAndDownloadImage, type DownloadScale } from '../utils/imageUtils';
+import { getItem, setItem } from '../utils/storage';
 
 // Card templates
 const templates = ref<CardTemplateType[]>([
@@ -40,6 +41,34 @@ const isPreviewMode = ref(false);
 const isDownloading = ref(false);
 const showSuccessMessage = ref(false);
 const activeStep = ref(1);
+const downloadScale = ref<DownloadScale>(2);
+
+// keys
+const STORAGE_KEY = 'cardDraft';
+
+// 恢复草稿
+onMounted(() => {
+  const draft = getItem<any>(STORAGE_KEY, null);
+  if (draft) {
+    selectedTemplateId.value = draft.templateId ?? null;
+    message.value = typeof draft.message === 'string' ? draft.message : '';
+    userImage.value = typeof draft.image === 'string' ? draft.image : null;
+    // 恢复时如果已有模板与消息，定位到第3步
+    if (selectedTemplateId.value && message.value.trim()) {
+      activeStep.value = 3;
+    }
+  }
+});
+
+// 保存草稿（节流简单处理）
+watch([selectedTemplateId, message, userImage], ([t, m, img]) => {
+  setItem(STORAGE_KEY, {
+    templateId: t,
+    message: m,
+    image: img,
+    updatedAt: new Date().toISOString()
+  });
+});
 
 // Handle template selection
 const selectTemplate = (templateId: number) => {
@@ -73,8 +102,8 @@ const downloadCard = async () => {
   isDownloading.value = true;
 
   try {
-    await generateAndDownloadImage(cardRef.value, '致爱妈咪贺卡');
-    showSuccessMessage.value = true;
+  const res = await generateAndDownloadImage(cardRef.value, { fileName: '致爱妈咪贺卡', scale: downloadScale.value });
+  showSuccessMessage.value = res.ok;
     setTimeout(() => {
       showSuccessMessage.value = false;
     }, 3000);
@@ -99,8 +128,10 @@ const togglePreview = () => {
 };
 
 // Check if form is valid
+const MIN_MSG = 5;
 const isFormValid = computed(() => {
-  return selectedTemplateId.value !== null && message.value.trim() !== '';
+  const msg = message.value.trim();
+  return selectedTemplateId.value !== null && msg.length >= MIN_MSG && msg.length <= maxChars;
 });
 
 // Character count
@@ -158,16 +189,16 @@ const formattedDate = computed(() => {
         <div class="progress-bar">
           <div class="progress-fill" :style="{ width: `${progressPercentage}%` }"></div>
         </div>
-        <div class="progress-steps">
-          <div class="progress-step" :class="{ 'active': activeStep >= 1, 'completed': selectedTemplateId !== null }">
+        <div class="progress-steps" role="list" aria-label="制作进度">
+          <div class="progress-step" role="listitem" :aria-current="activeStep === 1 ? 'step' : undefined" :class="{ 'active': activeStep >= 1, 'completed': selectedTemplateId !== null }">
             <div class="step-number">1</div>
             <div class="step-label">选择模板</div>
           </div>
-          <div class="progress-step" :class="{ 'active': activeStep >= 2, 'completed': message.trim() !== '' }">
+          <div class="progress-step" role="listitem" :aria-current="activeStep === 2 ? 'step' : undefined" :class="{ 'active': activeStep >= 2, 'completed': message.trim() !== '' }">
             <div class="step-number">2</div>
             <div class="step-label">添加祝福</div>
           </div>
-          <div class="progress-step" :class="{ 'active': activeStep >= 3, 'completed': userImage !== null }">
+          <div class="progress-step" role="listitem" :aria-current="activeStep === 3 ? 'step' : undefined" :class="{ 'active': activeStep >= 3, 'completed': userImage !== null }">
             <div class="step-number">3</div>
             <div class="step-label">上传照片</div>
           </div>
@@ -176,10 +207,10 @@ const formattedDate = computed(() => {
     </div>
 
     <!-- Template selection -->
-    <div class="section card step-1" :class="{ 'active-step': activeStep === 1 }">
+    <div class="section card step-1" :class="{ 'active-step': activeStep === 1 }" aria-labelledby="step1-title">
       <div class="step-header">
         <div class="step-icon">🎨</div>
-        <h3>1. 选择贺卡模板</h3>
+        <h3 id="step1-title">1. 选择贺卡模板</h3>
       </div>
 
       <div class="templates-grid">
@@ -197,6 +228,7 @@ const formattedDate = computed(() => {
           @click="activeStep = 2; scrollToActiveStep()"
           :disabled="selectedTemplateId === null"
           class="next-step-btn"
+          aria-label="下一步，添加祝福"
         >
           下一步 <span class="btn-icon">→</span>
         </button>
@@ -204,10 +236,10 @@ const formattedDate = computed(() => {
     </div>
 
     <!-- Message input -->
-    <div class="section card step-2" :class="{ 'active-step': activeStep === 2 }">
+  <div class="section card step-2" :class="{ 'active-step': activeStep === 2 }" aria-labelledby="step2-title">
       <div class="step-header">
         <div class="step-icon">✍️</div>
-        <h3>2. 添加祝福语</h3>
+    <h3 id="step2-title">2. 添加祝福语</h3>
       </div>
 
       <div class="form-group">
@@ -220,8 +252,10 @@ const formattedDate = computed(() => {
           v-model="message"
           rows="4"
           placeholder="亲爱的妈妈，感谢您的养育之恩..."
-          :maxlength="maxChars + 10"
+          :maxlength="maxChars"
+          aria-describedby="message-help"
         ></textarea>
+        <small id="message-help" class="sr-only">最少 {{ MIN_MSG }} 字，最多 {{ maxChars }} 字</small>
       </div>
 
       <div class="message-suggestions">
@@ -234,26 +268,26 @@ const formattedDate = computed(() => {
       </div>
 
       <div class="step-navigation">
-        <button @click="activeStep = 1; scrollToActiveStep()" class="prev-step-btn">
+  <button @click="activeStep = 1; scrollToActiveStep()" class="prev-step-btn" aria-label="上一步，选择模板">
           <span class="btn-icon">←</span> 上一步
         </button>
-        <button @click="activeStep = 3; scrollToActiveStep()" :disabled="message.trim() === ''" class="next-step-btn">
+  <button @click="activeStep = 3; scrollToActiveStep()" :disabled="!isFormValid" class="next-step-btn" aria-label="下一步，上传照片">
           下一步 <span class="btn-icon">→</span>
         </button>
       </div>
     </div>
 
     <!-- Image upload -->
-    <div class="section card step-3" :class="{ 'active-step': activeStep === 3 }">
+  <div class="section card step-3" :class="{ 'active-step': activeStep === 3 }" aria-labelledby="step3-title">
       <div class="step-header">
         <div class="step-icon">📷</div>
-        <h3>3. 上传照片（可选）</h3>
+    <h3 id="step3-title">3. 上传照片（可选）</h3>
       </div>
 
       <div class="upload-container">
         <div class="upload-area">
           <div class="form-group">
-            <label for="image" class="upload-label">
+            <label for="image" class="upload-label" role="button" tabindex="0" aria-controls="image" aria-label="选择或更换照片">
               <div class="upload-icon">
                 <span v-if="!userImage">+</span>
                 <span v-else>✓</span>
@@ -280,13 +314,14 @@ const formattedDate = computed(() => {
       </div>
 
       <div class="step-navigation">
-        <button @click="activeStep = 2; scrollToActiveStep()" class="prev-step-btn">
+        <button @click="activeStep = 2; scrollToActiveStep()" class="prev-step-btn" aria-label="上一步，编辑祝福">
           <span class="btn-icon">←</span> 上一步
         </button>
         <button
           @click="togglePreview"
           :disabled="!isFormValid"
           class="preview-btn"
+          :aria-pressed="isPreviewMode"
         >
           <span class="btn-icon">👁️</span> {{ isPreviewMode ? '返回编辑' : '预览贺卡' }}
         </button>
@@ -294,7 +329,7 @@ const formattedDate = computed(() => {
     </div>
 
     <!-- Card preview -->
-    <div class="card-preview-section" v-if="isPreviewMode && selectedTemplate">
+  <div class="card-preview-section" v-if="isPreviewMode && selectedTemplate">
       <div class="preview-header">
         <h3>贺卡预览</h3>
         <p class="preview-tip">这是您的贺卡预览，您可以下载并发送给妈妈</p>
@@ -320,6 +355,14 @@ const formattedDate = computed(() => {
         </div>
 
         <div class="preview-actions">
+          <div class="scale-select">
+            <label for="scale">清晰度</label>
+            <select id="scale" v-model.number="downloadScale" aria-label="选择下载清晰度">
+              <option :value="1">1x（兼容性最佳）</option>
+              <option :value="1.5">1.5x</option>
+              <option :value="2">2x（最清晰）</option>
+            </select>
+          </div>
           <button
             @click="togglePreview"
             class="edit-btn"
@@ -337,7 +380,7 @@ const formattedDate = computed(() => {
           </button>
         </div>
 
-        <div class="success-message" v-if="showSuccessMessage">
+        <div class="success-message" v-if="showSuccessMessage" aria-live="polite">
           <span class="success-icon">✓</span> 贺卡已成功下载！
         </div>
       </div>
@@ -930,6 +973,16 @@ const formattedDate = computed(() => {
   margin-top: 2.5rem;
 }
 
+.scale-select {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.scale-select label {
+  margin: 0;
+}
+
 .edit-btn {
   background-color: white;
   color: var(--primary-color);
@@ -1025,12 +1078,34 @@ const formattedDate = computed(() => {
   }
 
   .preview-actions {
-    flex-direction: column;
-    width: 100%;
+  flex-direction: column;
+  width: 100%;
   }
 
   .card-preview-section {
     padding: 1.5rem;
+  }
+}
+
+/* 减少动效：尊重系统设置 */
+@media (prefers-reduced-motion: reduce) {
+  .greeting-card-creator,
+  .section-title,
+  .section-description,
+  .progress-container,
+  .step-icon,
+  .image-preview-container,
+  .card-preview-section,
+  .card-container:hover,
+  .card-image:hover,
+  .download-btn:hover,
+  .edit-btn:hover,
+  .preview-btn:hover,
+  .next-step-btn:hover,
+  .prev-step-btn:hover {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
   }
 }
 </style>

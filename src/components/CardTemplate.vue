@@ -22,7 +22,16 @@ const handleSelect = () => {
 </script>
 
 <template>
-  <div :class="cardClasses" @click="handleSelect">
+  <div
+    :class="cardClasses"
+    @click="handleSelect"
+    role="button"
+    tabindex="0"
+    :aria-pressed="isSelected"
+    :aria-label="`选择模板 ${template.name}`"
+    @keydown.enter="handleSelect"
+    @keydown.space.prevent="handleSelect"
+  >
     <div class="template-image">
       <img :src="template.image" :alt="template.name" />
       <div class="template-overlay"></div>

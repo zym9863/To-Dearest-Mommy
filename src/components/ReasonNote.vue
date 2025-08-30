@@ -323,4 +323,15 @@ const formattedDate = computed(() => {
     max-width: 300px;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .reason-note,
+  .note-decoration {
+    animation: none !important;
+    transition: none !important;
+  }
+  .reason-note:hover {
+    transform: none !important;
+  }
+}
 </style>

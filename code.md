@@ -78,9 +78,9 @@
 
 ## 快速改进优先级
 - P0（本周）
-  - 本地持久化草稿与理由墙；输入校验与去重
-  - `prefers-reduced-motion` 支持；为交互元素补 aria/键盘焦点
-  - 下载清晰度选项与失败降级提示
+  - 本地持久化草稿与理由墙；输入校验与去重（已实现：storage.ts、GreetingCard、LoveReasons）
+  - `prefers-reduced-motion` 支持；为交互元素补 aria/键盘焦点（已实现：全局 CSS、CardTemplate、GreetingCard、成功消息 aria-live）
+  - 下载清晰度选项与失败降级提示（已实现：imageUtils 支持 1x/1.5x/2x 与降级；UI 选择器）
 - P1（下周）
   - ESLint/Prettier/Vitest + 基础单元测试；GitHub Actions CI
   - `vite.config.ts` 补 `base`（若需子路径部署）
@@ -90,10 +90,10 @@
   - 性能细化（图片 toBlob 压缩、动画惰性启动）
 
 ## 质量门禁速查
-- Build：未在本次会话执行
-- Typecheck：未执行
-- Lint：未执行
-- Test：未执行
+- Build：未执行（可通过 pnpm run build 验证）
+- Typecheck：已在编辑器静态检查通过（关键文件无错误）
+- Lint：未配置
+- Test：未配置
 
 可选本地验证（Windows cmd）：
 

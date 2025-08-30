@@ -18,26 +18,32 @@
    - 描述：将 `GreetingCard` 草稿（模板ID、祝福语、图片DataURL或引用）与 `LoveReasons` 列表存入 localStorage。
    - 验收：刷新后数据仍在；可清空；容量超限有降级提示。
    - 备注：统一序列化为 JSON，日期用 ISO 字符串。
+   - 进度：已完成（`src/utils/storage.ts`、`GreetingCard.vue`、`LoveReasons.vue`）。
 
 2. 输入校验与防重复
    - 描述：祝福语和理由内容做长度、空白、重复校验；超限禁止提交并提示原因。
    - 验收：超限按钮禁用；提示可读；重复项不可添加。
+   - 进度：已完成（最小长度、maxlength、去重）。
 
 3. 下载清晰度选项
    - 描述：html2canvas 导出提供 1x/1.5x/2x 选项；失败给出降级建议（降低清晰度/关闭图片）。
    - 验收：三个选项可选；弱机型 1x 能成功导出。
+   - 进度：已完成（`imageUtils.ts` 扩展、UI 下拉）。
 
 4. 可访问性基础
    - 描述：关键交互元素补充 aria 属性与键盘可达；`aria-live` 用于成功消息；对比度优化。
    - 验收：Tab 可遍历所有可交互元素；NVDA 朗读信息合理；对比度≥4.5:1。
+   - 进度：部分完成（aria 属性、aria-live、键盘操作已加；对比度维持原主题，后续可再提升）。
 
 5. 降低动画强度
    - 描述：支持 `prefers-reduced-motion: reduce`；在移动端或 reduce 时关闭重阴影/过度动画。
    - 验收：系统开启减少动效后页面动画明显减少，FPS 提升。
+   - 进度：已完成（全局与组件内媒体查询）。
 
 6. 部署友好
    - 描述：若发布到子路径，配置 Vite `base`；提供 GH Pages 指南。
    - 验收：在 `https://<user>.github.io/To-Dearest-Mommy/` 一切资源 200。
+   - 进度：已加入可配置 `base`（`vite.config.ts` 使用环境变量 `VITE_BASE`）。
 
 ---
 
